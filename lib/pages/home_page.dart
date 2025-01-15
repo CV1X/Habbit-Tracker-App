@@ -196,13 +196,19 @@ class _HomePageState extends State<HomePage> {
     return FutureBuilder<DateTime?>(
       future: habitDatabase.getFirstLaunchDate(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        } else if (snapshot.hasData && snapshot.data != null) {
           return MyHeadMap(
             startDate: snapshot.data!,
             datasets: prepareHeatMapDataset(currentHabits),
           );
         } else {
-          return Container();
+          return Container(
+            child: Text("No data available for heatmap"),
+          );
         }
       },
     );
